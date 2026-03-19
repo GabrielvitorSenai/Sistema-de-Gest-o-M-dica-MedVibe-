@@ -1,0 +1,2 @@
+# Sistema de Gestão Médica (MedVibe)
+ Escopo do Projeto Você foi contratado para desenvolver o "esqueleto" de um sistema para uma clínica médica. Nesta primeira etapa, seu objetivo é criar as fundações para três entidades principais:  Paciente - Médico - Consulta  Objetivo Desenvolver uma API REST usando Spring Boot que permita o gerenciamento (CRUD) dessas três entidades, utilizando persistência em banco de dados MySQL.
