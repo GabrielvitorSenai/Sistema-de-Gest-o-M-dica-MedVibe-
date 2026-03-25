@@ -2,12 +2,13 @@ package com.clinica.medvibe.service;
 
 import java.util.List;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 import org.springframework.stereotype.Service;
 
 import com.clinica.medvibe.dto.PacienteDTO;
 import com.clinica.medvibe.model.Paciente;
 import com.clinica.medvibe.repository.PacienteRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 
 
@@ -43,25 +44,65 @@ public List<PacienteDTO> listarPacientes() {
 
 }
 
-// Metodo para obter todos os Pacientes - RESTORE(READ)
-public List<PacienteDTO> listarPacientesId() {
-    List<Paciente> pacienteEntity = pacienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+// Método para obter UM Paciente por id (READ)
+public PacienteDTO listarPacientesId(Long id) {
+    // Busca o paciente. Se não encontrar, lança uma exceção.
+    Paciente paciente = pacienteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado com o id: " + id));
 
-    return pacienteEntity.stream().map(paciente -> new PacienteDTO(paciente.getId(), paciente.getNome(), paciente.getIdade(),
-            paciente.getEmail(), paciente.getTelefone())).toList();
+    // Converte a entidade encontrada diretamente para DTO
+    return new PacienteDTO(
+            paciente.getId(), 
+            paciente.getNome(), 
+            paciente.getIdade(),
+            paciente.getEmail(), 
+            paciente.getTelefone()
+    );
+    }
+// Método para atualizar um Paciente(completo) - UPDATE
+public PacienteDTO atualizarPacientePut(Long id, PacienteDTO pacienteDTO) {
+    Paciente paciente = pacienteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
+    paciente.setNome(pacienteDTO.nome());
+    paciente.setIdade(pacienteDTO.idade());
+    paciente.setEmail(pacienteDTO.email());
+    paciente.setTelefone(pacienteDTO.telefone());
+
+    pacienteRepository.save(paciente);
+
+    return new PacienteDTO(paciente.getId(), paciente.getNome(), paciente.getIdade(),
+    paciente.getEmail(), paciente.getTelefone());
 }
 
+// Método para att um Cliente (parcial) - UPDATE
+public PacienteDTO atualizarPacientePatch(Long id, PacienteDTO pacienteDTO) {
+    Paciente paciente = pacienteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
+    if (pacienteDTO.nome() != null) {
+        paciente.setNome(pacienteDTO.nome());
+    }
+    if(pacienteDTO.idade() != null) {
+        paciente.setIdade(pacienteDTO.idade());
+    }
+    if (pacienteDTO.email() != null) {
+        paciente.setEmail(pacienteDTO.email());
+    }
+    if (pacienteDTO.telefone() != null) {
+        paciente.setTelefone(pacienteDTO.telefone());
+    }
+    pacienteRepository.save(paciente);
 
+    return new PacienteDTO(paciente.getId(), paciente.getNome(), paciente.getIdade(),
+    paciente.getEmail(), paciente.getTelefone());
+}
 
-
-
-
-
-
-
-
-
-
+// Método para excluir um Cliente -DELETE
+public void excluirPaciente(Long id) {
+    if (!pacienteRepository.existsById(id)) {
+        throw new EntityNotFoundException("O paciente com id " + id + "não existe.");
+    }
+    pacienteRepository.deleteById(id);
+}
 }

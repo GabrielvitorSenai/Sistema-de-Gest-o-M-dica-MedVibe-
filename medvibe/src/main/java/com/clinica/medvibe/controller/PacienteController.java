@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,15 +46,41 @@ public class PacienteController {
 
         return ResponseEntity.ok(pacientes);
     }
-    // RESTORE - Endpoint(rota para buscar todos os clientes)
-    @GetMapping("/listar/{id}")
-    public ResponseEntity<List<PacienteDTO>> listarPacientesId() {
-        List<PacienteDTO> pacientes = pacienteService.listarPacientesId();
 
-        if (pacientes.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+    // RESTORE - Endpoint para buscar um cliente por ID
+    @GetMapping("listar/{id}")
+    public ResponseEntity<PacienteDTO> listarPacientesId(@PathVariable Long id) {
 
-        return ResponseEntity.ok(pacientes);
+        PacienteDTO paciente = pacienteService.listarPacientesId(id);
+
+        return ResponseEntity.ok(paciente);
     }
+
+    // UPDATE - Endpoint (rota para att um Cliente)
+    @PutMapping("put/{id}")
+    public ResponseEntity<PacienteDTO> atualizarPacientePut(@PathVariable long id, @RequestBody PacienteDTO pacienteDTO) {
+
+        PacienteDTO pacienteAtualizado = pacienteService.atualizarPacientePut(id, pacienteDTO);
+
+        return ResponseEntity.ok(pacienteAtualizado);
+    }
+
+    // UPDATE - Endpoint (rota para att um cliente)Parcial
+    @PutMapping("patch/{id}")
+    public ResponseEntity<PacienteDTO> atualizarPacientePatch(@PathVariable long id, @RequestBody PacienteDTO pacienteDTO) {
+
+        PacienteDTO pacienteAtualizado = pacienteService.atualizarPacientePatch(id, pacienteDTO);
+
+        return ResponseEntity.ok(pacienteAtualizado);
+    }
+
+    // DELETE - Endpoint (rota para excluir um aluno)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarPaciente(@PathVariable Long id) {
+
+        pacienteService.excluirPaciente(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
